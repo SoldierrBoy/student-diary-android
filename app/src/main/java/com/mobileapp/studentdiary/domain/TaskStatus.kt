@@ -1,9 +1,10 @@
 package com.mobileapp.studentdiary.domain
 
 enum class TaskStatus {
-    NOT_STARTED,
+    TODO,
     IN_PROGRESS,
-    SUBMITTED,
-    UNDER_REVIEW,
-    REVISION_REQUIRED
+    DONE,
+    REVIEW,
+    REVISION
 }
+

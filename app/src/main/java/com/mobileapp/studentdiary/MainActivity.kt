@@ -4,51 +4,49 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModelProvider
+import com.mobileapp.studentdiary.data.FakeStudyTaskRepository
+import com.mobileapp.studentdiary.domain.usecase.AddStudyTaskUseCase
+import com.mobileapp.studentdiary.domain.usecase.DeleteStudyTaskUseCase
+import com.mobileapp.studentdiary.domain.usecase.GetAllStudyTasksUseCase
+import com.mobileapp.studentdiary.domain.usecase.UpdateStudyTaskUseCase
+import com.mobileapp.studentdiary.presentation.StudentDiaryApp
+import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
+import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModelFactory
 import com.mobileapp.studentdiary.ui.theme.StudentDiaryTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-//        setContent {
-//            StudentDiaryTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Greeting(
-//                        name = "Android",
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-//                }
-//            }
+
+        val repository = FakeStudyTaskRepository.withSampleData()
+        val getAllTasks = GetAllStudyTasksUseCase(repository)
+        val addTask = AddStudyTaskUseCase(repository)
+        val updateTask = UpdateStudyTaskUseCase(repository)
+        val deleteTask = DeleteStudyTaskUseCase(repository)
+
+        val factory = StudyTaskViewModelFactory(
+            getAllStudyTasksUseCase = getAllTasks,
+            addStudyTaskUseCase = addTask,
+            updateStudyTaskUseCase = updateTask,
+            deleteStudyTaskUseCase = deleteTask
+        )
+
+        val viewModel = ViewModelProvider(this, factory)[StudyTaskViewModel::class.java]
+
         setContent {
+
             StudentDiaryTheme {
-                androidx.compose.material3.Text(
-                    text = "Student Diary запущений ✅",
+                StudentDiaryApp(
+                    tasksViewModel = viewModel
                 )
             }
-
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    StudentDiaryTheme {
-        Greeting("Android")
     }
 }

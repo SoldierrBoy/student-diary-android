@@ -1,7 +1,10 @@
 package com.mobileapp.studentdiary.data.grades
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.mobileapp.studentdiary.data.subjects.SubjectEntity
 import java.time.LocalDate
 
 @Entity(

@@ -10,13 +10,19 @@ import com.mobileapp.studentdiary.data.grades.GradeDao
 import com.mobileapp.studentdiary.data.grades.GradeEntity
 import com.mobileapp.studentdiary.data.subjects.SubjectDao
 import com.mobileapp.studentdiary.data.subjects.SubjectEntity
+import com.mobileapp.studentdiary.data.schedules.ScheduleDao
+import com.mobileapp.studentdiary.data.schedules.ScheduleEntity
 
-@Database(entities = [StudyTaskEntity::class, GradeEntity::class, SubjectEntity::class], version = 3, exportSchema = false)
+@Database(entities = [StudyTaskEntity::class,
+                        GradeEntity::class,
+                        SubjectEntity::class,
+                        ScheduleEntity::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun studyTaskDao(): StudyTaskDao
     abstract fun gradeDao(): GradeDao
     abstract fun subjectDao(): SubjectDao
+    abstract fun scheduleDao(): ScheduleDao
 }
 
 

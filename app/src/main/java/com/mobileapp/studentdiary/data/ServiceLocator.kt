@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.mobileapp.studentdiary.data.tasks.StudyTaskRepositoryImpl
 import com.mobileapp.studentdiary.data.grades.GradeRepositoryImpl
+import com.mobileapp.studentdiary.data.subjects.SubjectRepositoryImpl
 import com.mobileapp.studentdiary.domain.StudyTaskRepository
 import com.mobileapp.studentdiary.domain.repository.GradeRepository
+import com.mobileapp.studentdiary.domain.repository.SubjectRepository
 
 /**
  * Service Locator для Data.
@@ -27,15 +29,18 @@ object ServiceLocator {
     @Volatile
     private var gradeRepository: GradeRepository? = null
 
+    @Volatile
+    private var subjectRepository: SubjectRepository? = null
+
     private val lock = Any()
 
     /**
      * Ініціалізує базу та репозиторій. Викликати один раз (наприклад, в Application.onCreate()).
      */
     fun init(context: Context) {
-        if (studyTaskRepository == null || gradeRepository == null) {
+        if (studyTaskRepository == null || gradeRepository == null || subjectRepository == null) {
             synchronized(lock) {
-                if (studyTaskRepository == null || gradeRepository == null) {
+                if (studyTaskRepository == null || gradeRepository == null|| subjectRepository == null) {
                     val db = database ?: buildDatabase(context)
                     database = db
 
@@ -45,6 +50,10 @@ object ServiceLocator {
 
                     if (gradeRepository == null) {
                         gradeRepository = GradeRepositoryImpl(db.gradeDao())
+                    }
+
+                    if (subjectRepository == null) {
+                        subjectRepository = SubjectRepositoryImpl(db.subjectDao())
                     }
                 }
             }
@@ -82,6 +91,16 @@ object ServiceLocator {
     }
 
     /**
+     * Повертає SubjectRepository. Якщо не ініціалізовано — кинеться помилка з підказкою.
+     */
+    fun provideSubjectRepository(): SubjectRepository {
+        return subjectRepository
+            ?: throw IllegalStateException(
+                "ServiceLocator not initialized. Call ServiceLocator.init(context) before accessing subject repository."
+            )
+    }
+
+    /**
      * Для тестів: підмінити репозиторій (наприклад, FakeStudyTaskRepository.withSampleData()).
      */
     fun setStudyTaskRepositoryForTests(repo: StudyTaskRepository) {
@@ -92,6 +111,10 @@ object ServiceLocator {
         gradeRepository = repo
     }
 
+    fun setSubjectRepositoryForTests(repo: SubjectRepository) {
+        subjectRepository = repo
+    }
+
     /**
      * Використовувати в тестах, щоб закрити БД і очистити стан.
      */
@@ -100,5 +123,6 @@ object ServiceLocator {
         database = null
         studyTaskRepository = null
         gradeRepository = null
+        subjectRepository = null
     }
 }

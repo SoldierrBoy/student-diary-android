@@ -5,20 +5,25 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.mobileapp.studentdiary.presentation.screen.grades.GradesScreen
 import com.mobileapp.studentdiary.presentation.screen.materials.MaterialsScreen
 import com.mobileapp.studentdiary.presentation.screen.schedule.ScheduleScreen
 import com.mobileapp.studentdiary.presentation.screen.settings.SettingsScreen
 import com.mobileapp.studentdiary.presentation.screen.tasks.AddTaskScreen
 import com.mobileapp.studentdiary.presentation.screen.tasks.TasksScreen
+import com.mobileapp.studentdiary.presentation.screen.subjectdetails.SubjectDetailsScreen
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
+import com.mobileapp.studentdiary.presentation.viewmodel.subjectdetails.SubjectDetailsViewModel
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     tasksViewModel: StudyTaskViewModel,
     subjectsViewModel: SubjectsViewModel,
+    subjectDetailsViewModel: SubjectDetailsViewModel,
     navigator: AppNavigator,
     modifier: Modifier = Modifier
 ) {
@@ -34,6 +39,25 @@ fun AppNavGraph(
                 onSubjectClick = { subjectId ->
                     navigator.openSubjectDetails(subjectId)
                 }
+            )
+        }
+
+        composable(
+            route = Screen.SubjectDetails.route,
+            arguments = listOf(
+                navArgument("subjectId") {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+
+            val subjectId =
+                backStackEntry.arguments?.getLong("subjectId") ?: return@composable
+
+            SubjectDetailsScreen(
+                subjectId = subjectId,
+                viewModel = subjectDetailsViewModel,
+                onBack = { navigator.popBack() }
             )
         }
 

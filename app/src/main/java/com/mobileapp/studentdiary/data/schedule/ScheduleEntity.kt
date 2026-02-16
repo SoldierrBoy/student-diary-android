@@ -1,5 +1,6 @@
 package com.mobileapp.studentdiary.data.schedule
 
+
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index

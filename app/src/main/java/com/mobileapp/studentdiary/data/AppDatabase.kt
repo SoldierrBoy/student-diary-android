@@ -10,8 +10,8 @@ import com.mobileapp.studentdiary.data.grades.GradeDao
 import com.mobileapp.studentdiary.data.grades.GradeEntity
 import com.mobileapp.studentdiary.data.subjects.SubjectDao
 import com.mobileapp.studentdiary.data.subjects.SubjectEntity
-import com.mobileapp.studentdiary.data.schedules.ScheduleDao
-import com.mobileapp.studentdiary.data.schedules.ScheduleEntity
+import com.mobileapp.studentdiary.data.schedule.ScheduleDao
+import com.mobileapp.studentdiary.data.schedule.ScheduleEntity
 
 @Database(entities = [StudyTaskEntity::class,
                         GradeEntity::class,

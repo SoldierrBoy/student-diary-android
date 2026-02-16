@@ -5,7 +5,7 @@ import androidx.room.Room
 import com.mobileapp.studentdiary.data.tasks.StudyTaskRepositoryImpl
 import com.mobileapp.studentdiary.data.grades.GradeRepositoryImpl
 import com.mobileapp.studentdiary.data.subjects.SubjectRepositoryImpl
-import com.mobileapp.studentdiary.data.schedules.ScheduleRepositoryImpl
+import com.mobileapp.studentdiary.data.schedule.ScheduleRepositoryImpl
 import com.mobileapp.studentdiary.domain.StudyTaskRepository
 import com.mobileapp.studentdiary.domain.repository.GradeRepository
 import com.mobileapp.studentdiary.domain.repository.SubjectRepository

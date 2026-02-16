@@ -10,9 +10,12 @@ import com.mobileapp.studentdiary.domain.usecase.AddStudyTaskUseCase
 import com.mobileapp.studentdiary.domain.usecase.DeleteStudyTaskUseCase
 import com.mobileapp.studentdiary.domain.usecase.GetAllStudyTasksUseCase
 import com.mobileapp.studentdiary.domain.usecase.UpdateStudyTaskUseCase
+import com.mobileapp.studentdiary.domain.usecase.subjects.*
 import com.mobileapp.studentdiary.presentation.StudentDiaryApp
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModelFactory
+import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
+import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModelFactory
 import com.mobileapp.studentdiary.ui.theme.StudentDiaryTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,21 +24,42 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val repository = ServiceLocator.provideStudyTaskRepository()
+        // 🔥 ВАЖЛИВО — ініціалізація Room
+        ServiceLocator.init(applicationContext)
 
-        val factory = StudyTaskViewModelFactory(
-            getAllStudyTasksUseCase = GetAllStudyTasksUseCase(repository),
-            addStudyTaskUseCase = AddStudyTaskUseCase(repository),
-            updateStudyTaskUseCase = UpdateStudyTaskUseCase(repository),
-            deleteStudyTaskUseCase = DeleteStudyTaskUseCase(repository)
+        // ===== TASKS =====
+        val taskRepository = ServiceLocator.provideStudyTaskRepository()
+
+        val tasksFactory = StudyTaskViewModelFactory(
+            getAllStudyTasksUseCase = GetAllStudyTasksUseCase(taskRepository),
+            addStudyTaskUseCase = AddStudyTaskUseCase(taskRepository),
+            updateStudyTaskUseCase = UpdateStudyTaskUseCase(taskRepository),
+            deleteStudyTaskUseCase = DeleteStudyTaskUseCase(taskRepository)
         )
 
-        val viewModel = ViewModelProvider(this, factory)[StudyTaskViewModel::class.java]
+        val tasksViewModel =
+            ViewModelProvider(this, tasksFactory)[StudyTaskViewModel::class.java]
+
+        // ===== SUBJECTS =====
+        val subjectRepository = ServiceLocator.provideSubjectRepository()
+
+        val subjectUseCases = SubjectUseCases(
+            getAllSubjects = GetAllSubjectsUseCase(subjectRepository),
+            insertSubject = InsertSubjectUseCase(subjectRepository),
+            updateSubject = UpdateSubjectUseCase(subjectRepository),
+            deleteSubject = DeleteSubjectUseCase(subjectRepository)
+        )
+
+        val subjectsFactory = SubjectsViewModelFactory(subjectUseCases)
+
+        val subjectsViewModel =
+            ViewModelProvider(this, subjectsFactory)[SubjectsViewModel::class.java]
 
         setContent {
             StudentDiaryTheme {
                 StudentDiaryApp(
-                    tasksViewModel = viewModel
+                    tasksViewModel = tasksViewModel,
+                    subjectsViewModel = subjectsViewModel
                 )
             }
         }

@@ -11,10 +11,12 @@ import com.mobileapp.studentdiary.presentation.navigation.AppNavGraph
 import com.mobileapp.studentdiary.presentation.navigation.AppNavigator
 import com.mobileapp.studentdiary.presentation.navigation.Screen
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
+import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
 
 @Composable
 fun StudentDiaryApp(
-    tasksViewModel: StudyTaskViewModel
+    tasksViewModel: StudyTaskViewModel,
+    subjectsViewModel: SubjectsViewModel
 ) {
     val navController = rememberNavController()
     val navigator = AppNavigator(navController)
@@ -64,6 +66,8 @@ fun StudentDiaryApp(
         AppNavGraph(
             navController = navController,
             tasksViewModel = tasksViewModel,
+            subjectsViewModel = subjectsViewModel,
+            navigator = navigator,
             modifier = Modifier.padding(innerPadding)
         )
     }

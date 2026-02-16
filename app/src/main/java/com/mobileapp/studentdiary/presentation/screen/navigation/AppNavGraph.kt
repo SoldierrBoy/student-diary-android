@@ -12,15 +12,16 @@ import com.mobileapp.studentdiary.presentation.screen.settings.SettingsScreen
 import com.mobileapp.studentdiary.presentation.screen.tasks.AddTaskScreen
 import com.mobileapp.studentdiary.presentation.screen.tasks.TasksScreen
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
+import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     tasksViewModel: StudyTaskViewModel,
+    subjectsViewModel: SubjectsViewModel,
+    navigator: AppNavigator,
     modifier: Modifier = Modifier
 ) {
-    val navigator = AppNavigator(navController)
-
     NavHost(
         navController = navController,
         startDestination = Screen.Grades.route,
@@ -28,7 +29,12 @@ fun AppNavGraph(
     ) {
 
         composable(Screen.Grades.route) {
-            GradesScreen()
+            GradesScreen(
+                viewModel = subjectsViewModel,
+                onSubjectClick = { subjectId ->
+                    navigator.openSubjectDetails(subjectId)
+                }
+            )
         }
 
         composable(Screen.Schedule.route) {

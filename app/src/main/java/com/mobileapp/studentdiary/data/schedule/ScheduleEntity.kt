@@ -29,5 +29,7 @@ data class ScheduleEntity(
     val date: LocalDate,
     val startTime: LocalTime,
     val endTime: LocalTime,
-    val location: String? = null
+    val location: String? = null,
+    val weekParity: Int, // 0 = BOTH, 1 = NUMERATOR, 2 = DENOMINATOR
+    val classType: Int // 0 = OTHER, 1 = LECTURE, 2 = PRACTICE, 3 = LAB
 )

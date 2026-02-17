@@ -6,10 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.ViewModelProvider
 import com.mobileapp.studentdiary.data.ServiceLocator
-import com.mobileapp.studentdiary.domain.usecase.AddStudyTaskUseCase
-import com.mobileapp.studentdiary.domain.usecase.DeleteStudyTaskUseCase
-import com.mobileapp.studentdiary.domain.usecase.GetAllStudyTasksUseCase
-import com.mobileapp.studentdiary.domain.usecase.UpdateStudyTaskUseCase
+import com.mobileapp.studentdiary.domain.usecase.*
 import com.mobileapp.studentdiary.domain.usecase.subjects.*
 import com.mobileapp.studentdiary.presentation.StudentDiaryApp
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
@@ -24,10 +21,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // 🔥 ВАЖЛИВО — ініціалізація Room
+        // 🔥 Ініціалізація Room
         ServiceLocator.init(applicationContext)
 
-        // ===== TASKS =====
+        // =====================
+        // TASKS
+        // =====================
         val taskRepository = ServiceLocator.provideStudyTaskRepository()
 
         val tasksFactory = StudyTaskViewModelFactory(
@@ -40,7 +39,9 @@ class MainActivity : ComponentActivity() {
         val tasksViewModel =
             ViewModelProvider(this, tasksFactory)[StudyTaskViewModel::class.java]
 
-        // ===== SUBJECTS =====
+        // =====================
+        // SUBJECTS (Journal)
+        // =====================
         val subjectRepository = ServiceLocator.provideSubjectRepository()
 
         val subjectUseCases = SubjectUseCases(
@@ -55,6 +56,9 @@ class MainActivity : ComponentActivity() {
         val subjectsViewModel =
             ViewModelProvider(this, subjectsFactory)[SubjectsViewModel::class.java]
 
+        // =====================
+        // UI START
+        // =====================
         setContent {
             StudentDiaryTheme {
                 StudentDiaryApp(

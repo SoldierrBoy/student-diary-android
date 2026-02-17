@@ -3,10 +3,10 @@ package com.mobileapp.studentdiary.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.mobileapp.studentdiary.presentation.screen.grades.GradesScreen
 import com.mobileapp.studentdiary.presentation.screen.materials.MaterialsScreen
 import com.mobileapp.studentdiary.presentation.screen.schedule.ScheduleScreen
@@ -15,8 +15,8 @@ import com.mobileapp.studentdiary.presentation.screen.tasks.AddTaskScreen
 import com.mobileapp.studentdiary.presentation.screen.tasks.TasksScreen
 import com.mobileapp.studentdiary.presentation.screen.subjectdetails.SubjectDetailsScreen
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
-import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.subjectdetails.SubjectDetailsViewModel
+import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
 
 @Composable
 fun AppNavGraph(
@@ -27,6 +27,7 @@ fun AppNavGraph(
     navigator: AppNavigator,
     modifier: Modifier = Modifier
 ) {
+
     NavHost(
         navController = navController,
         startDestination = Screen.Grades.route,

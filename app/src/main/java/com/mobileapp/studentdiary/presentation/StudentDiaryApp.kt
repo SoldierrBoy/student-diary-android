@@ -12,8 +12,8 @@ import com.mobileapp.studentdiary.presentation.navigation.AppNavGraph
 import com.mobileapp.studentdiary.presentation.navigation.AppNavigator
 import com.mobileapp.studentdiary.presentation.navigation.Screen
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
-import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.subjectdetails.SubjectDetailsViewModel
+import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
 
 @Composable
 fun StudentDiaryApp(
@@ -23,7 +23,6 @@ fun StudentDiaryApp(
 
     val navController = rememberNavController()
     val navigator = AppNavigator(navController)
-
 
     val subjectDetailsViewModel = SubjectDetailsViewModel(
         ServiceLocator.provideGradeRepository()
@@ -76,7 +75,7 @@ fun StudentDiaryApp(
             navController = navController,
             tasksViewModel = tasksViewModel,
             subjectsViewModel = subjectsViewModel,
-            subjectDetailsViewModel = subjectDetailsViewModel, // ✅ ДОДАЛИ
+            subjectDetailsViewModel = subjectDetailsViewModel,
             navigator = navigator,
             modifier = Modifier.padding(innerPadding)
         )

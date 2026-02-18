@@ -13,13 +13,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.mobileapp.studentdiary.domain.model.Schedule
 import com.mobileapp.studentdiary.presentation.screen.schedule.components.AddScheduleDialog
 import com.mobileapp.studentdiary.presentation.screen.schedule.components.DayItem
 import com.mobileapp.studentdiary.presentation.screen.schedule.components.ScheduleCard
 import com.mobileapp.studentdiary.presentation.viewmodel.schedule.ScheduleEvent
 import com.mobileapp.studentdiary.presentation.viewmodel.schedule.ScheduleViewModel
-import java.time.LocalDate
 
 @Composable
 fun ScheduleScreen(viewModel: ScheduleViewModel) {
@@ -80,7 +78,7 @@ fun ScheduleScreen(viewModel: ScheduleViewModel) {
     if (state.showAddDialog) {
         AddScheduleDialog(
             subjects = state.subjects,
-            selectedDate = state.selectedDate,
+            selectedDayOfWeek = state.selectedDate.dayOfWeek,
             onDismiss = { viewModel.onEvent(ScheduleEvent.CloseAddDialog) },
             onConfirm = { schedule ->
                 viewModel.onEvent(ScheduleEvent.AddSchedule(schedule))

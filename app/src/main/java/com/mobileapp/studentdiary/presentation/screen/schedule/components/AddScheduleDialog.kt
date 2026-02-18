@@ -6,9 +6,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mobileapp.studentdiary.domain.model.ClassType
 import com.mobileapp.studentdiary.domain.model.Schedule
 import com.mobileapp.studentdiary.domain.model.Subject
-import java.time.LocalDate
+import com.mobileapp.studentdiary.domain.model.WeekParity
+import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -16,7 +18,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddScheduleDialog(
     subjects: List<Subject>,
-    selectedDate: LocalDate,
+    selectedDayOfWeek: DayOfWeek,
     onDismiss: () -> Unit,
     onConfirm: (Schedule) -> Unit
 ) {
@@ -26,6 +28,8 @@ fun AddScheduleDialog(
     var startTime by remember { mutableStateOf(LocalTime.of(8, 30)) }
     var endTime by remember { mutableStateOf(LocalTime.of(10, 0)) }
     var location by remember { mutableStateOf("") }
+    var selectedParity by remember { mutableStateOf(WeekParity.BOTH) }
+    var selectedType by remember { mutableStateOf(ClassType.LECTURE) }
 
     var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndTimePicker by remember { mutableStateOf(false) }
@@ -123,10 +127,12 @@ fun AddScheduleDialog(
                         val newSchedule = Schedule(
                             id = 0L,
                             subjectId = subject.id,
-                            date = selectedDate,
+                            dayOfWeek = selectedDayOfWeek,
                             startTime = startTime,
                             endTime = endTime,
-                            location = location.takeIf { it.isNotBlank() }
+                            location = location.takeIf { it.isNotBlank() },
+                            weekParity = selectedParity,
+                            classType = selectedType
                         )
                         onConfirm(newSchedule)
                     }

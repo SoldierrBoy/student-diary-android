@@ -16,7 +16,7 @@ import com.mobileapp.studentdiary.data.schedule.ScheduleEntity
 @Database(entities = [StudyTaskEntity::class,
                         GradeEntity::class,
                         SubjectEntity::class,
-                        ScheduleEntity::class], version = 6, exportSchema = false)
+                        ScheduleEntity::class], version = 7, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun studyTaskDao(): StudyTaskDao

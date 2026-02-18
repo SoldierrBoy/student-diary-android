@@ -3,13 +3,22 @@ package com.mobileapp.studentdiary.data.schedule
 import com.mobileapp.studentdiary.domain.model.Schedule
 import com.mobileapp.studentdiary.domain.model.WeekParity
 import com.mobileapp.studentdiary.domain.model.ClassType
+import java.time.DayOfWeek
 
 object ScheduleMapper {
 
     fun fromDomain(domain: Schedule): ScheduleEntity = ScheduleEntity(
         id = domain.id,
         subjectId = domain.subjectId,
-        date = domain.date,
+        dayOfWeek = when (domain.dayOfWeek) {
+            DayOfWeek.MONDAY -> 1
+            DayOfWeek.TUESDAY -> 2
+            DayOfWeek.WEDNESDAY -> 3
+            DayOfWeek.THURSDAY -> 4
+            DayOfWeek.FRIDAY -> 5
+            DayOfWeek.SATURDAY -> 6
+            DayOfWeek.SUNDAY -> 7
+        },
         startTime = domain.startTime,
         endTime = domain.endTime,
         location = domain.location,
@@ -29,7 +38,15 @@ object ScheduleMapper {
     fun toDomain(entity: ScheduleEntity): Schedule = Schedule(
         id = entity.id,
         subjectId = entity.subjectId,
-        date = entity.date,
+        dayOfWeek = when (entity.dayOfWeek) {
+            1 -> DayOfWeek.MONDAY
+            2 -> DayOfWeek.TUESDAY
+            3 -> DayOfWeek.WEDNESDAY
+            4 -> DayOfWeek.THURSDAY
+            5 -> DayOfWeek.FRIDAY
+            6 -> DayOfWeek.SATURDAY
+            else -> DayOfWeek.SUNDAY
+        },
         startTime = entity.startTime,
         endTime = entity.endTime,
         location = entity.location,

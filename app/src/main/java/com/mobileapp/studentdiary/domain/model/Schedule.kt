@@ -1,7 +1,7 @@
 package com.mobileapp.studentdiary.domain.model
 
-import java.time.LocalDate
 import java.time.LocalTime
+import java.time.DayOfWeek
 
 enum class WeekParity { NUMERATOR, DENOMINATOR, BOTH }
 enum class ClassType { LECTURE, PRACTICE, LAB, OTHER }
@@ -9,7 +9,7 @@ enum class ClassType { LECTURE, PRACTICE, LAB, OTHER }
 data class Schedule(
     val id: Long,
     val subjectId: Long,
-    val date: LocalDate,
+    val dayOfWeek: DayOfWeek,
     val startTime: LocalTime,
     val endTime: LocalTime,
     val location: String?,

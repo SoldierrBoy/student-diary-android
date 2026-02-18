@@ -15,8 +15,9 @@ class ScheduleRepositoryImpl(
 ) : ScheduleRepository {
 
     override fun getScheduleByDate(date: LocalDate): Flow<List<Schedule>> {
+        val dayOfWeek = date.dayOfWeek.value
         val parity = computeParity(date)
-        return dao.getScheduleByDate(date)
+        return dao.getScheduleByDay(dayOfWeek)
             .map { list ->
                 list
                     .map { ScheduleMapper.toDomain(it) }

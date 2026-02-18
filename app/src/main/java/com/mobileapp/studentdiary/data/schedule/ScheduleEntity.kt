@@ -6,7 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.mobileapp.studentdiary.data.subjects.SubjectEntity
-import java.time.LocalDate
 import java.time.LocalTime
 
 @Entity(
@@ -26,7 +25,7 @@ data class ScheduleEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val subjectId: Long,
-    val date: LocalDate,
+    val dayOfWeek: Int, // 1 = Monday .. 7 = Sunday
     val startTime: LocalTime,
     val endTime: LocalTime,
     val location: String? = null,

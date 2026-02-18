@@ -8,8 +8,8 @@ import java.time.LocalDate
 @Dao
 interface ScheduleDao {
 
-    @Query("SELECT * FROM schedules WHERE date = :date ORDER BY startTime ASC")
-    fun getScheduleByDate(date: LocalDate): Flow<List<ScheduleEntity>>
+    @Query("SELECT * FROM schedules WHERE dayOfWeek = :dayOfWeek ORDER BY startTime ASC")
+    fun getScheduleByDay(dayOfWeek: Int): Flow<List<ScheduleEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(schedule: ScheduleEntity): Long

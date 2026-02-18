@@ -19,7 +19,7 @@ import java.time.LocalTime
             onUpdate = ForeignKey.CASCADE
         )
     ],
-    indices = [Index(value = ["subjectId"]), Index(value = ["date"])]
+    indices = [Index(value = ["subjectId"]), Index(value = ["dayOfWeek"])]
 )
 data class ScheduleEntity(
     @PrimaryKey(autoGenerate = true)

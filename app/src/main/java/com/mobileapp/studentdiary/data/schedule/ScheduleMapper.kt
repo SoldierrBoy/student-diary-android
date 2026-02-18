@@ -10,15 +10,7 @@ object ScheduleMapper {
     fun fromDomain(domain: Schedule): ScheduleEntity = ScheduleEntity(
         id = domain.id,
         subjectId = domain.subjectId,
-        dayOfWeek = when (domain.dayOfWeek) {
-            DayOfWeek.MONDAY -> 1
-            DayOfWeek.TUESDAY -> 2
-            DayOfWeek.WEDNESDAY -> 3
-            DayOfWeek.THURSDAY -> 4
-            DayOfWeek.FRIDAY -> 5
-            DayOfWeek.SATURDAY -> 6
-            DayOfWeek.SUNDAY -> 7
-        },
+        dayOfWeek = domain.dayOfWeek.value,
         startTime = domain.startTime,
         endTime = domain.endTime,
         location = domain.location,
@@ -38,15 +30,7 @@ object ScheduleMapper {
     fun toDomain(entity: ScheduleEntity): Schedule = Schedule(
         id = entity.id,
         subjectId = entity.subjectId,
-        dayOfWeek = when (entity.dayOfWeek) {
-            1 -> DayOfWeek.MONDAY
-            2 -> DayOfWeek.TUESDAY
-            3 -> DayOfWeek.WEDNESDAY
-            4 -> DayOfWeek.THURSDAY
-            5 -> DayOfWeek.FRIDAY
-            6 -> DayOfWeek.SATURDAY
-            else -> DayOfWeek.SUNDAY
-        },
+        dayOfWeek = DayOfWeek.of(entity.dayOfWeek),
         startTime = entity.startTime,
         endTime = entity.endTime,
         location = entity.location,

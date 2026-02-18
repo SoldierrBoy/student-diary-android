@@ -149,4 +149,29 @@ object ServiceLocator {
         subjectRepository = null
         scheduleRepository = null
     }
+
+    fun provideGetScheduleByDateUseCase(): com.mobileapp.studentdiary.domain.usecase.schedule.GetScheduleByDateUseCase =
+        com.mobileapp.studentdiary.domain.usecase.schedule.GetScheduleByDateUseCase(provideScheduleRepository())
+
+    fun provideInsertScheduleUseCase(): com.mobileapp.studentdiary.domain.usecase.schedule.InsertScheduleUseCase =
+        com.mobileapp.studentdiary.domain.usecase.schedule.InsertScheduleUseCase(provideScheduleRepository())
+
+    fun provideUpdateScheduleUseCase(): com.mobileapp.studentdiary.domain.usecase.schedule.UpdateScheduleUseCase =
+        com.mobileapp.studentdiary.domain.usecase.schedule.UpdateScheduleUseCase(provideScheduleRepository())
+
+    fun provideDeleteScheduleUseCase(): com.mobileapp.studentdiary.domain.usecase.schedule.DeleteScheduleUseCase =
+        com.mobileapp.studentdiary.domain.usecase.schedule.DeleteScheduleUseCase(provideScheduleRepository())
+
+    fun provideGetAllSubjectsUseCase(): com.mobileapp.studentdiary.domain.usecase.subjects.GetAllSubjectsUseCase =
+        com.mobileapp.studentdiary.domain.usecase.subjects.GetAllSubjectsUseCase(provideSubjectRepository())
+
+    fun provideScheduleViewModelFactory(): com.mobileapp.studentdiary.presentation.viewmodel.schedule.ScheduleViewModelFactory {
+        return com.mobileapp.studentdiary.presentation.viewmodel.schedule.ScheduleViewModelFactory(
+            getScheduleByDateUseCase = provideGetScheduleByDateUseCase(),
+            insertScheduleUseCase = provideInsertScheduleUseCase(),
+            updateScheduleUseCase = provideUpdateScheduleUseCase(),
+            deleteScheduleUseCase = provideDeleteScheduleUseCase(),
+            getAllSubjectsUseCase = provideGetAllSubjectsUseCase()
+        )
+    }
 }

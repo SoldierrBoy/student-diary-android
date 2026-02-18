@@ -9,5 +9,7 @@ data class ScheduleUiState(
     val subjects: List<Subject> = emptyList(),
     val selectedDate: LocalDate = LocalDate.now(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val highlightedScheduleId: Long? = null,
+    val showAddDialog: Boolean = false
 )

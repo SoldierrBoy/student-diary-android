@@ -10,8 +10,10 @@ import com.mobileapp.studentdiary.domain.usecase.schedule.UpdateScheduleUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalTime
 
 class ScheduleViewModel(
     private val getScheduleByDateUseCase: GetScheduleByDateUseCase,
@@ -43,6 +45,7 @@ class ScheduleViewModel(
             is ScheduleEvent.AddSchedule -> {
                 viewModelScope.launch {
                     insertScheduleUseCase(event.schedule)
+                    _uiState.value = _uiState.value.copy(showAddDialog = false)
                 }
             }
 
@@ -57,28 +60,46 @@ class ScheduleViewModel(
                     deleteScheduleUseCase(event.schedule)
                 }
             }
+
+            is ScheduleEvent.OpenAddDialog -> {
+                _uiState.value = _uiState.value.copy(showAddDialog = true)
+            }
+
+            is ScheduleEvent.CloseAddDialog -> {
+                _uiState.value = _uiState.value.copy(showAddDialog = false)
+            }
         }
     }
 
     private fun loadSchedule(date: LocalDate) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            
-            getScheduleByDateUseCase(date).collect { scheduleList ->
+            getScheduleByDateUseCase(date).collectLatest { scheduleList ->
+                val highlightedId = computeHighlighted(scheduleList, date)
                 _uiState.value = _uiState.value.copy(
                     schedules = scheduleList,
-                    isLoading = false
+                    isLoading = false,
+                    highlightedScheduleId = highlightedId
                 )
             }
         }
     }
+
+    private fun computeHighlighted(list: List<com.mobileapp.studentdiary.domain.model.Schedule>, date: LocalDate): Long? {
+        if (date != LocalDate.now()) return null
+        val now = LocalTime.now()
+        return list.firstOrNull { s ->
+            !now.isBefore(s.startTime) && now.isBefore(s.endTime)
+        }?.id
+    }
+
     fun getSubjectName(subjectId: Long): String {
         return uiState.value.subjects.find { it.id == subjectId }?.name ?: "Невідомий предмет"
     }
 
     private fun loadSubjects() {
         viewModelScope.launch {
-            getAllSubjectsUseCase().collect { subjectsList ->
+            getAllSubjectsUseCase().collectLatest { subjectsList ->
                 _uiState.value = _uiState.value.copy(subjects = subjectsList)
             }
         }

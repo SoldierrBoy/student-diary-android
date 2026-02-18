@@ -13,4 +13,8 @@ sealed class ScheduleEvent {
     data class DeleteSchedule(val schedule: Schedule) : ScheduleEvent()
     
     data class SelectDate(val date: LocalDate) : ScheduleEvent()
+
+    object OpenAddDialog : ScheduleEvent()
+
+    object CloseAddDialog : ScheduleEvent()
 }

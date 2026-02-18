@@ -1,12 +1,14 @@
 package com.mobileapp.studentdiary.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobileapp.studentdiary.presentation.screen.grades.GradesScreen
 import com.mobileapp.studentdiary.presentation.screen.materials.MaterialsScreen
 import com.mobileapp.studentdiary.presentation.screen.schedule.ScheduleScreen
@@ -17,6 +19,8 @@ import com.mobileapp.studentdiary.presentation.screen.subjectdetails.SubjectDeta
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.subjectdetails.SubjectDetailsViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
+import com.mobileapp.studentdiary.data.ServiceLocator
+import com.mobileapp.studentdiary.presentation.viewmodel.schedule.ScheduleViewModel
 
 @Composable
 fun AppNavGraph(
@@ -63,7 +67,9 @@ fun AppNavGraph(
         }
 
         composable(Screen.Schedule.route) {
-            ScheduleScreen()
+            val factory = remember { ServiceLocator.provideScheduleViewModelFactory() }
+            val scheduleViewModel: ScheduleViewModel = viewModel(factory = factory)
+            ScheduleScreen(viewModel = scheduleViewModel)
         }
 
         composable(Screen.Tasks.route) {

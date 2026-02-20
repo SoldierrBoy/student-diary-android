@@ -9,10 +9,12 @@ import com.mobileapp.studentdiary.data.ServiceLocator
 import com.mobileapp.studentdiary.domain.usecase.*
 import com.mobileapp.studentdiary.domain.usecase.subjects.*
 import com.mobileapp.studentdiary.presentation.StudentDiaryApp
+import com.mobileapp.studentdiary.presentation.screen.subjectjournal.SubjectJournalViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModelFactory
 import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModelFactory
+import com.mobileapp.studentdiary.presentation.screen.subjectjournal.SubjectJournalViewModelFactory
 import com.mobileapp.studentdiary.ui.theme.StudentDiaryTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,12 +23,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // 🔥 Ініціалізація Room
         ServiceLocator.init(applicationContext)
 
-        // =====================
         // TASKS
-        // =====================
         val taskRepository = ServiceLocator.provideStudyTaskRepository()
 
         val tasksFactory = StudyTaskViewModelFactory(
@@ -39,9 +38,7 @@ class MainActivity : ComponentActivity() {
         val tasksViewModel =
             ViewModelProvider(this, tasksFactory)[StudyTaskViewModel::class.java]
 
-        // =====================
-        // SUBJECTS (Journal)
-        // =====================
+        // SUBJECTS
         val subjectRepository = ServiceLocator.provideSubjectRepository()
 
         val subjectUseCases = SubjectUseCases(
@@ -56,14 +53,20 @@ class MainActivity : ComponentActivity() {
         val subjectsViewModel =
             ViewModelProvider(this, subjectsFactory)[SubjectsViewModel::class.java]
 
-        // =====================
-        // UI START
-        // =====================
+        // LESSONS (Journal Logic)
+        val lessonRepository = ServiceLocator.provideLessonRepository()
+
+        val subjectJournalViewModel = ViewModelProvider(
+            this,
+            SubjectJournalViewModelFactory(lessonRepository)
+        )[SubjectJournalViewModel::class.java]
+
         setContent {
             StudentDiaryTheme {
                 StudentDiaryApp(
                     tasksViewModel = tasksViewModel,
-                    subjectsViewModel = subjectsViewModel
+                    subjectsViewModel = subjectsViewModel,
+                    subjectJournalViewModel = subjectJournalViewModel
                 )
             }
         }

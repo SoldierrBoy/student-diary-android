@@ -10,6 +10,8 @@ import com.mobileapp.studentdiary.domain.StudyTaskRepository
 import com.mobileapp.studentdiary.domain.repository.GradeRepository
 import com.mobileapp.studentdiary.domain.repository.SubjectRepository
 import com.mobileapp.studentdiary.domain.repository.ScheduleRepository
+import com.mobileapp.studentdiary.data.lessons.LessonRepositoryImpl
+import com.mobileapp.studentdiary.domain.repository.LessonRepository
 
 /**
  * Service Locator для Data.
@@ -36,6 +38,10 @@ object ServiceLocator {
 
     @Volatile
     private var scheduleRepository: ScheduleRepository? = null
+
+    @Volatile
+    private var lessonRepository: LessonRepository? = null
+
 
     private val lock = Any()
 
@@ -64,6 +70,10 @@ object ServiceLocator {
                     if (scheduleRepository == null) {
                         scheduleRepository = ScheduleRepositoryImpl(db.scheduleDao())
                     }
+                    if (lessonRepository == null) {
+                        lessonRepository = LessonRepositoryImpl(db.lessonDao())
+                    }
+
                 }
             }
         }
@@ -116,6 +126,12 @@ object ServiceLocator {
         return scheduleRepository
             ?: throw IllegalStateException(
                 "ServiceLocator not initialized. Call ServiceLocator.init(context) before accessing schedule repository."
+            )
+    }
+    fun provideLessonRepository(): LessonRepository {
+        return lessonRepository
+            ?: throw IllegalStateException(
+                "ServiceLocator not initialized. Call ServiceLocator.init(context) before accessing lesson repository."
             )
     }
 

@@ -24,6 +24,24 @@ fun SubjectDetailsScreen(
         viewModel.observeGrades(subjectId)
     }
 
+    // 🔥 Рахуємо середній бал
+    val average = remember(grades) {
+        if (grades.isNotEmpty()) {
+            grades.map { it.value }.average()
+        } else {
+            0.0
+        }
+    }
+
+    // 🔥 Простий прогноз = поточний середній
+    val forecast = average
+    val count = grades.size
+    val highest = grades.maxOfOrNull { it.value }
+    val lowest = grades.minOfOrNull { it.value }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,6 +55,31 @@ fun SubjectDetailsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // 🔹 Середній бал
+        Text(
+            text = if (grades.isNotEmpty())
+                "Середній бал: ${"%.2f".format(average)}"
+            else
+                "Середній бал: —"
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("Кількість оцінок: $count")
+
+        if (highest != null && lowest != null) {
+            Text("Найвища оцінка: $highest")
+            Text("Найнижча оцінка: $lowest")
+        }
+        // 🔹 Прогноз
+        Text(
+            text = if (grades.isNotEmpty())
+                "Прогноз за семестр: ${"%.2f".format(forecast)}"
+            else
+                "Прогноз за семестр: —"
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         OutlinedTextField(
             value = gradeInput,
             onValueChange = { gradeInput = it },
@@ -48,12 +91,20 @@ fun SubjectDetailsScreen(
         Button(
             onClick = {
                 val value = gradeInput.toIntOrNull()
-                if (value != null) {
-                    viewModel.addGrade(subjectId, value)
-                    gradeInput = ""
+
+                if (value == null) {
+                    return@Button
                 }
+
+                if (value !in 0..100) {
+                    return@Button
+                }
+
+                viewModel.addGrade(subjectId, value)
+                gradeInput = ""
             }
-        ) {
+        )
+        {
             Text("Додати оцінку")
         }
 
@@ -61,11 +112,24 @@ fun SubjectDetailsScreen(
 
         LazyColumn {
             items(grades) { grade ->
-                Text(
-                    text = "Оцінка: ${grade.value}  (${grade.date})",
-                    modifier = Modifier.padding(8.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Оцінка: ${grade.value} (${grade.date})"
+                    )
+
+                    TextButton(
+                        onClick = { viewModel.deleteGrade(grade) }
+                    ) {
+                        Text("Видалити")
+                    }
+                }
             }
+
         }
     }
 }

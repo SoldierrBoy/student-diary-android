@@ -1,5 +1,6 @@
 package com.mobileapp.studentdiary.presentation.navigation
 
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -13,17 +14,17 @@ import com.mobileapp.studentdiary.presentation.screen.schedule.ScheduleScreen
 import com.mobileapp.studentdiary.presentation.screen.settings.SettingsScreen
 import com.mobileapp.studentdiary.presentation.screen.tasks.AddTaskScreen
 import com.mobileapp.studentdiary.presentation.screen.tasks.TasksScreen
-import com.mobileapp.studentdiary.presentation.screen.subjectdetails.SubjectDetailsScreen
+import com.mobileapp.studentdiary.presentation.screen.subjectjournal.SubjectJournalScreen
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
-import com.mobileapp.studentdiary.presentation.viewmodel.subjectdetails.SubjectDetailsViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
+import com.mobileapp.studentdiary.presentation.screen.subjectjournal.SubjectJournalViewModel
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     tasksViewModel: StudyTaskViewModel,
     subjectsViewModel: SubjectsViewModel,
-    subjectDetailsViewModel: SubjectDetailsViewModel,
+    subjectJournalViewModel: SubjectJournalViewModel,
     navigator: AppNavigator,
     modifier: Modifier = Modifier
 ) {
@@ -55,9 +56,9 @@ fun AppNavGraph(
             val subjectId =
                 backStackEntry.arguments?.getLong("subjectId") ?: return@composable
 
-            SubjectDetailsScreen(
+            SubjectJournalScreen(
                 subjectId = subjectId,
-                viewModel = subjectDetailsViewModel,
+                viewModel = subjectJournalViewModel,
                 onBack = { navigator.popBack() }
             )
         }

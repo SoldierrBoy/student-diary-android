@@ -37,4 +37,10 @@ class SubjectDetailsViewModel(
             )
         }
     }
+
+    fun deleteGrade(grade: Grade) {
+        viewModelScope.launch {
+            repository.deleteGrade(grade)
+        }
+    }
 }

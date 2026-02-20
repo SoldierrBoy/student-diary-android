@@ -7,26 +7,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.mobileapp.studentdiary.data.ServiceLocator
 import com.mobileapp.studentdiary.presentation.navigation.AppNavGraph
 import com.mobileapp.studentdiary.presentation.navigation.AppNavigator
 import com.mobileapp.studentdiary.presentation.navigation.Screen
 import com.mobileapp.studentdiary.presentation.viewmodel.StudyTaskViewModel
-import com.mobileapp.studentdiary.presentation.viewmodel.subjectdetails.SubjectDetailsViewModel
 import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
+import com.mobileapp.studentdiary.presentation.screen.subjectjournal.SubjectJournalViewModel
 
 @Composable
 fun StudentDiaryApp(
     tasksViewModel: StudyTaskViewModel,
-    subjectsViewModel: SubjectsViewModel
+    subjectsViewModel: SubjectsViewModel,
+    subjectJournalViewModel: SubjectJournalViewModel
 ) {
 
     val navController = rememberNavController()
     val navigator = AppNavigator(navController)
-
-    val subjectDetailsViewModel = SubjectDetailsViewModel(
-        ServiceLocator.provideGradeRepository()
-    )
 
     val bottomItems = listOf(
         Screen.Grades,
@@ -75,7 +71,7 @@ fun StudentDiaryApp(
             navController = navController,
             tasksViewModel = tasksViewModel,
             subjectsViewModel = subjectsViewModel,
-            subjectDetailsViewModel = subjectDetailsViewModel,
+            subjectJournalViewModel = subjectJournalViewModel,
             navigator = navigator,
             modifier = Modifier.padding(innerPadding)
         )

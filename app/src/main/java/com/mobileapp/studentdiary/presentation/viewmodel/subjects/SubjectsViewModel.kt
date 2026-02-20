@@ -15,6 +15,17 @@ import kotlinx.coroutines.launch
 class SubjectsViewModel(
     private val useCases: SubjectUseCases
 ) : ViewModel() {
+    fun updateSubject(subject: Subject) {
+        viewModelScope.launch {
+            useCases.updateSubject(subject)
+        }
+    }
+
+    fun deleteSubject(subject: Subject) {
+        viewModelScope.launch {
+            useCases.deleteSubject(subject)
+        }
+    }
 
     private val _state = MutableStateFlow(SubjectsUiState())
     val state: StateFlow<SubjectsUiState> = _state.asStateFlow()

@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.mobileapp.studentdiary.domain.model.Subject
 import com.mobileapp.studentdiary.presentation.viewmodel.subjects.SubjectsViewModel
 
 @Composable
@@ -21,7 +24,9 @@ fun GradesScreen(
     onSubjectClick: (Long) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+
     var showAddDialog by remember { mutableStateOf(false) }
+    var subjectToEdit by remember { mutableStateOf<Subject?>(null) }
 
     Scaffold(
         floatingActionButton = {
@@ -52,8 +57,10 @@ fun GradesScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Журнал порожній.\nДодайте перший предмет!",
-                        textAlign = TextAlign.Center)
+                    Text(
+                        "Журнал порожній.\nДодайте перший предмет!",
+                        textAlign = TextAlign.Center
+                    )
                 }
             } else {
                 LazyColumn(
@@ -62,17 +69,46 @@ fun GradesScreen(
                 ) {
                     items(state.subjects) { subject ->
                         Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onSubjectClick(subject.id) }
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onSubjectClick(subject.id) }
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+
                                 Text(
                                     text = subject.name,
                                     style = MaterialTheme.typography.titleMedium
                                 )
+
+                                Row {
+                                    IconButton(
+                                        onClick = {
+                                            subjectToEdit = subject
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Edit,
+                                            contentDescription = "Редагувати"
+                                        )
+                                    }
+
+                                    IconButton(
+                                        onClick = {
+                                            viewModel.deleteSubject(subject)
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = "Видалити",
+                                            tint = MaterialTheme.colorScheme.error
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -81,8 +117,11 @@ fun GradesScreen(
         }
     }
 
+    // Діалог створення
     if (showAddDialog) {
         AddSubjectDialog(
+            title = "Новий предмет",
+            initialValue = "",
             onDismiss = { showAddDialog = false },
             onConfirm = { name ->
                 viewModel.addSubject(name)
@@ -90,18 +129,33 @@ fun GradesScreen(
             }
         )
     }
+
+    // Діалог редагування
+    subjectToEdit?.let { subject ->
+        AddSubjectDialog(
+            title = "Редагування предмета",
+            initialValue = subject.name,
+            onDismiss = { subjectToEdit = null },
+            onConfirm = { newName ->
+                viewModel.updateSubject(subject.copy(name = newName))
+                subjectToEdit = null
+            }
+        )
+    }
 }
 
 @Composable
 fun AddSubjectDialog(
+    title: String,
+    initialValue: String,
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf(initialValue) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Новий предмет") },
+        title = { Text(title) },
         text = {
             OutlinedTextField(
                 value = text,
@@ -113,10 +167,13 @@ fun AddSubjectDialog(
         },
         confirmButton = {
             Button(
-                onClick = { if (text.isNotBlank()) onConfirm(text.trim()) },
+                onClick = {
+                    if (text.isNotBlank())
+                        onConfirm(text.trim())
+                },
                 enabled = text.isNotBlank()
             ) {
-                Text("Додати")
+                Text("Зберегти")
             }
         },
         dismissButton = {
@@ -126,4 +183,3 @@ fun AddSubjectDialog(
         }
     )
 }
-

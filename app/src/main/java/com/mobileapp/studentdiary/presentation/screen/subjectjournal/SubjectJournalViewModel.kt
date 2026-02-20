@@ -46,6 +46,12 @@ class SubjectJournalViewModel(
         }
     }
 
+    fun updateLesson(lesson: Lesson) {
+        viewModelScope.launch {
+            repository.updateLesson(lesson)
+        }
+    }
+
     fun deleteLesson(lesson: Lesson) {
         viewModelScope.launch {
             repository.deleteLesson(lesson)

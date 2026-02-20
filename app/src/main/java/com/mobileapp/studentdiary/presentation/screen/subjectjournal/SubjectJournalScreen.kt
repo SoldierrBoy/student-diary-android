@@ -1,5 +1,6 @@
 package com.mobileapp.studentdiary.presentation.screen.subjectjournal
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.mobileapp.studentdiary.domain.model.Lesson
 import com.mobileapp.studentdiary.presentation.screen.subjectjournal.components.AddLessonDialog
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectJournalScreen(
@@ -26,17 +26,34 @@ fun SubjectJournalScreen(
 ) {
 
     val lessons by viewModel.lessons.collectAsState()
+
     var showDialog by remember { mutableStateOf(false) }
+    var lessonToEdit by remember { mutableStateOf<Lesson?>(null) }
 
     LaunchedEffect(subjectId) {
         viewModel.observeLessons(subjectId)
     }
 
-    // 🔥 Статистика
     val gradedLessons = lessons.filter { it.grade != null && !it.isAbsent }
     val average = if (gradedLessons.isNotEmpty())
         gradedLessons.map { it.grade!! }.average()
     else null
+
+    val maxGrade = gradedLessons.maxOfOrNull { it.grade!! }
+    val minGrade = gradedLessons.minOfOrNull { it.grade!! }
+
+    val absentCount = lessons.count { it.isAbsent }
+    val attendedCount = lessons.size - absentCount
+
+    val attendancePercent =
+        if (lessons.isNotEmpty())
+            (attendedCount * 100) / lessons.size
+        else 0
+
+    val successPercent =
+        if (gradedLessons.isNotEmpty())
+            (gradedLessons.count { it.grade!! >= 60 } * 100) / gradedLessons.size
+        else 0
 
     Scaffold(
         topBar = {
@@ -63,20 +80,26 @@ fun SubjectJournalScreen(
                 .padding(16.dp)
         ) {
 
-            // 📊 Статистика
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(6.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Статистика", fontWeight = FontWeight.Bold)
 
+                    Text("Статистика", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text("Кількість занять: ${lessons.size}")
+                    Text("Відсутні: $absentCount")
+                    Text("Відвідуваність: $attendancePercent%")
+
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     if (average != null) {
                         Text("Середній бал: ${"%.2f".format(average)}")
+                        Text("Максимальний бал: ${maxGrade ?: "—"}")
+                        Text("Мінімальний бал: ${minGrade ?: "—"}")
+                        Text("Успішність (≥60): $successPercent%")
                         Text("Прогноз за семестр: ${"%.2f".format(average)}")
                     } else {
                         Text("Середній бал: —")
@@ -87,7 +110,10 @@ fun SubjectJournalScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             if (lessons.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text("Поки що немає занять")
                 }
             } else {
@@ -97,6 +123,7 @@ fun SubjectJournalScreen(
                     items(lessons) { lesson ->
                         LessonCard(
                             lesson = lesson,
+                            onClick = { lessonToEdit = lesson },
                             onDelete = { viewModel.deleteLesson(lesson) }
                         )
                     }
@@ -105,23 +132,49 @@ fun SubjectJournalScreen(
         }
     }
 
+    // Створення
     if (showDialog) {
         AddLessonDialog(
+            lessonToEdit = null,
+            subjectId = subjectId,
             onDismiss = { showDialog = false },
-            onConfirm = { title, date, grade, isAbsent ->
-                viewModel.addLesson(subjectId, title, date, grade, isAbsent)
+            onConfirm = {
+                viewModel.addLesson(
+                    subjectId,
+                    it.title,
+                    it.date,
+                    it.grade,
+                    it.isAbsent
+                )
                 showDialog = false
             }
         )
     }
+
+    // Редагування
+    lessonToEdit?.let { lesson ->
+        AddLessonDialog(
+            lessonToEdit = lesson,
+            subjectId = subjectId,
+            onDismiss = { lessonToEdit = null },
+            onConfirm = {
+                viewModel.updateLesson(it)
+                lessonToEdit = null
+            }
+        )
+    }
 }
+
 @Composable
 fun LessonCard(
     lesson: Lesson,
+    onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(

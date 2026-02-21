@@ -2,7 +2,7 @@ package com.mobileapp.studentdiary.presentation.screen.schedule.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
@@ -13,6 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mobileapp.studentdiary.domain.model.Schedule
+import com.mobileapp.studentdiary.domain.model.ClassType
+import com.mobileapp.studentdiary.domain.model.WeekParity
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -54,17 +56,24 @@ fun ScheduleCard(schedule: Schedule, subjectName: String) {
                     .padding(horizontal = 12.dp)
                     .width(2.dp)
                     .height(40.dp)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), CircleShape)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
             )
 
-           Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = subjectName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
+
+                Row(modifier = Modifier.padding(top = 4.dp)) {
+                    SmallBadge(text = classTypeToLabel(schedule.classType))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    SmallBadge(text = parityToLabel(schedule.weekParity))
+                }
+
                 if (!schedule.location.isNullOrBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.LocationOn,
@@ -82,5 +91,37 @@ fun ScheduleCard(schedule: Schedule, subjectName: String) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun SmallBadge(text: String) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+        tonalElevation = 0.dp,
+        modifier = Modifier
+            .height(26.dp)
+    ) {
+        Box(modifier = Modifier.padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
+            Text(text = text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+        }
+    }
+}
+
+private fun classTypeToLabel(classType: ClassType): String {
+    return when (classType) {
+        ClassType.LECTURE -> "Лекція"
+        ClassType.PRACTICE -> "Практика"
+        ClassType.LAB -> "Лабораторна"
+        ClassType.OTHER -> "Інше"
+    }
+}
+
+private fun parityToLabel(parity: WeekParity): String {
+    return when (parity) {
+        WeekParity.NUMERATOR -> "Чисельник"
+        WeekParity.DENOMINATOR -> "Знаменник"
+        WeekParity.BOTH -> "Обидва"
     }
 }

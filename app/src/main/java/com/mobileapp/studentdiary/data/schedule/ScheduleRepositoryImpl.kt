@@ -3,9 +3,10 @@ package com.mobileapp.studentdiary.data.schedule
 import com.mobileapp.studentdiary.domain.model.Schedule
 import com.mobileapp.studentdiary.domain.repository.ScheduleRepository
 import com.mobileapp.studentdiary.domain.model.WeekParity
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.filter
 import java.time.LocalDate
 import java.time.temporal.WeekFields
 import java.util.Locale
@@ -13,6 +14,8 @@ import java.util.Locale
 class ScheduleRepositoryImpl(
     private val dao: ScheduleDao
 ) : ScheduleRepository {
+
+    private val mutex = Mutex()
 
     override fun getScheduleByDate(date: LocalDate): Flow<List<Schedule>> {
         val dayOfWeek = date.dayOfWeek.value
@@ -38,14 +41,53 @@ class ScheduleRepositoryImpl(
     }
 
     override suspend fun insertSchedule(schedule: Schedule) {
-        dao.insert(ScheduleMapper.fromDomain(schedule))
+        if (!schedule.startTime.isBefore(schedule.endTime)) {
+            throw IllegalArgumentException("Час початку має бути раніше часу кінця")
+        }
+
+        val entity = ScheduleMapper.fromDomain(schedule)
+
+        mutex.withLock {
+            val existing = runBlockingGetSchedulesForDay(entity.dayOfWeek, entity.weekParity)
+            val conflict = existing.firstOrNull { overlaps(it, entity) }
+            if (conflict != null) {
+                throw IllegalStateException("Перекриття з існуючою парою (id=${conflict.id})")
+            }
+
+            dao.insert(entity)
+        }
     }
 
     override suspend fun updateSchedule(schedule: Schedule) {
-        dao.update(ScheduleMapper.fromDomain(schedule))
+        if (!schedule.startTime.isBefore(schedule.endTime)) {
+            throw IllegalArgumentException("Час початку має бути раніше часу кінця")
+        }
+
+        val entity = ScheduleMapper.fromDomain(schedule)
+
+        mutex.withLock {
+            val existing = runBlockingGetSchedulesForDayExcluding(entity.dayOfWeek, entity.weekParity, entity.id)
+            val conflict = existing.firstOrNull { overlaps(it, entity) }
+            if (conflict != null) {
+                throw IllegalStateException("Перекриття з існуючою парою (id=${conflict.id})")
+            }
+            dao.update(entity)
+        }
     }
 
     override suspend fun deleteSchedule(schedule: Schedule) {
         dao.delete(ScheduleMapper.fromDomain(schedule))
+    }
+
+    private fun overlaps(a: ScheduleEntity, b: ScheduleEntity): Boolean {
+        return !(a.endTime <= b.startTime || a.startTime >= b.endTime)
+    }
+
+    private suspend fun runBlockingGetSchedulesForDay(dayOfWeek: Int, weekParity: Int): List<ScheduleEntity> {
+        return dao.getSchedulesForDayAndParity(dayOfWeek, weekParity)
+    }
+
+    private suspend fun runBlockingGetSchedulesForDayExcluding(dayOfWeek: Int, weekParity: Int, excludeId: Long): List<ScheduleEntity> {
+        return dao.getSchedulesForDayAndParityExcluding(dayOfWeek, weekParity, excludeId)
     }
 }

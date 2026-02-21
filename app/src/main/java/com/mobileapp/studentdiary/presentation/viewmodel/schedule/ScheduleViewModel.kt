@@ -44,14 +44,31 @@ class ScheduleViewModel(
 
             is ScheduleEvent.AddSchedule -> {
                 viewModelScope.launch {
-                    insertScheduleUseCase(event.schedule)
-                    _uiState.value = _uiState.value.copy(showAddDialog = false)
+                    try {
+                        insertScheduleUseCase(event.schedule)
+                        _uiState.value = _uiState.value.copy(showAddDialog = false, errorMessage = null)
+                    } catch (e: IllegalArgumentException) {
+                        _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                    } catch (e: IllegalStateException) {
+                        _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                    } catch (t: Throwable) {
+                        _uiState.value = _uiState.value.copy(errorMessage = "Помилка при додаванні пари")
+                    }
                 }
             }
 
             is ScheduleEvent.UpdateSchedule -> {
                 viewModelScope.launch {
-                    updateScheduleUseCase(event.schedule)
+                    try {
+                        updateScheduleUseCase(event.schedule)
+                        _uiState.value = _uiState.value.copy(errorMessage = null)
+                    } catch (e: IllegalArgumentException) {
+                        _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                    } catch (e: IllegalStateException) {
+                        _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                    } catch (t: Throwable) {
+                        _uiState.value = _uiState.value.copy(errorMessage = "Помилка при оновленні пари")
+                    }
                 }
             }
 
@@ -103,5 +120,9 @@ class ScheduleViewModel(
                 _uiState.value = _uiState.value.copy(subjects = subjectsList)
             }
         }
+    }
+
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 }
